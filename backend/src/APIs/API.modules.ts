@@ -1,5 +1,5 @@
-import { DownloaderApiController } from './DownloaderApi.controller';
-import { DownloaderApiService } from './DownloaderApi.service';
+import { DownloaderApiController } from './downloaderApi.controller';
+import { DownloaderApiService } from './downloaderApi.service';
 
 export const APIController = [DownloaderApiController];
 export const APIService = [DownloaderApiService];

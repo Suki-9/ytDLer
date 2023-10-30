@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Res } from '@nestjs/common';
-import { DownloaderApiService } from './DownloaderApi.service';
+import { DownloaderApiService } from './downloaderApi.service';
 
 import { Response } from 'express';
 

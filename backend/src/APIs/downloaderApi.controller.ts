@@ -10,13 +10,18 @@ export class DownloaderApiController {
 
   @Post('youtube-dl')
   async Downloader(
-    @Body() body: { url: string; id: string },
+    @Body() body: { url: string; id: string; options: Record<string, boolean> },
     @Res() res: Response,
   ): Promise<void> {
     try {
       res.status(200).json({
         msg: 'DL Success!',
-        url: await this.ytDownloader.Downloader(body.url, body.id),
+        url: body.url,
+        ...(await this.ytDownloader.Downloader(
+          body.url,
+          body.id,
+          body.options,
+        )),
       });
     } catch (err) {
       console.error(err);

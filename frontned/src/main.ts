@@ -5,7 +5,7 @@ import "./styles/main.css";
 import { createApp } from "vue";
 
 // plugins ---------------------------------------------///
-import VITE_env from "./plugin/vite_env";
+import VITE_env from "./plugins/vite_env";
 import router from "./router";
 
 import App from "./App.vue";

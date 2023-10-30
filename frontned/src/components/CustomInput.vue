@@ -34,9 +34,6 @@ defineProps<{
   justify-content: space-between;
 
   width: 100%;
-
-  margin: 0.5rem;
-
   input {
     width: 100%;
 
@@ -48,9 +45,6 @@ defineProps<{
     border: none;
 
     background-color: var(--secondary-bg-color);
-
-    border-radius: var(--default-border-radius);
-
     &:focus {
       outline: none;
     }

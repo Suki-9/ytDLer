@@ -1,0 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400&display=swap");
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100%;
+}
+
+:root {
+  font-family: "Zen Maru Gothic";
+  color: var(--primary-text-color);
+
+  background-color: var(--primary-bg-color);
+
+  --default-border-radius: 7px;
+
+  --primary-text-color: rgb(20, 20, 20);
+
+  --primary-bg-color: rgb(250, 250, 250);
+  --secondary-bg-color: color-mix(in srgb, var(--primary-bg-color), rgb(1,1,1) 7%);
+  --tertiary-bg-color: color-mix(in srgb, var(--primary-bg-color), rgb(1,1,1) 14%);
+}
+
+input {
+  font-family: "Zen Maru Gothic";
+}

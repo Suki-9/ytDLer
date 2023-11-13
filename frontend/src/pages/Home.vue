@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { genUuid } from "../scripts/UUID";
+import { ref } from 'vue';
+import { genUuid } from '../scripts/UUID';
 //@ts-ignore
-import { $API_URL } from "../plugins/vite_env";
+import { $API_URL } from '../plugins/vite_env';
 
 const isActive = ref<Record<string, boolean>>({
   soundOnly: false,
@@ -17,16 +17,16 @@ const fetchResponse = ref<{
   viewCount: string;
 }>();
 const submit = async () => {
-  if (DLURL.value !== "") {
+  if (DLURL.value !== '') {
     fetchResponse.value = await fetch(`${$API_URL}/api/youtube-dl`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         id: genUuid(),
         url: DLURL.value,
         options: {
-          ...isActive.value
-        }
+          ...isActive.value,
+        },
       }),
     })
       .then(response => (response.ok ? response.json() : undefined))
@@ -45,17 +45,17 @@ const submit = async () => {
 
   <div :class="$style.formBox">
     <form>
-      <input
-        :class="$style.inputRoot"
-        placeholder="Download YouTube URL"
-        v-model="DLURL"
-      />
+      <input :class="$style.inputRoot" placeholder="Download YouTube URL" v-model="DLURL" />
     </form>
     <i class="icon-download" aria-label="Download" @click="submit()"></i>
   </div>
 
   <div :class="$style.optionsBox">
-    <a @click="isActive.soundOnly = !isActive.soundOnly" :class="[$style.optionButton, { [$style.activeOption]: isActive.soundOnly}]">音声のみ(WAV)</a>
+    <a
+      @click="isActive.soundOnly = !isActive.soundOnly"
+      :class="[$style.optionButton, { [$style.activeOption]: isActive.soundOnly }]"
+      >音声のみ(WAV)</a
+    >
   </div>
 
   <div :class="$style.mediaContainer" v-if="fetchResponse">
@@ -63,15 +63,25 @@ const submit = async () => {
       <source :src="`${$API_URL}${fetchResponse.url}`" />
     </video>
     <div :class="$style.dataList">
-      <p>Title : <span>{{ fetchResponse.title ?? "タイトルがありません" }}</span></p>
-      <p>Upload Date : <span>{{ fetchResponse.uploadDate ?? "投稿日時がありません" }}</span></p>
-      <p>View Count : <span>{{ fetchResponse.viewCount ?? "再生数がありません" }}</span></p>
-      <p>URL : <a :herf="DLURL">{{ DLURL }}</a></p>
+      <p>
+        Title : <span>{{ fetchResponse.title ?? 'タイトルがありません' }}</span>
+      </p>
+      <p>
+        Upload Date : <span>{{ fetchResponse.uploadDate ?? '投稿日時がありません' }}</span>
+      </p>
+      <p>
+        View Count : <span>{{ fetchResponse.viewCount ?? '再生数がありません' }}</span>
+      </p>
+      <p>
+        URL : <a :herf="DLURL">{{ DLURL }}</a>
+      </p>
       <a
         :href="`${$API_URL}${fetchResponse.url}`"
         :download="`${fetchResponse.url}`"
-        target="_blank" 
-        rel="noopener noreferrer">Click to Download!</a>
+        target="_blank"
+        rel="noopener noreferrer"
+        >Click to Download!</a
+      >
     </div>
   </div>
 </template>
@@ -88,8 +98,8 @@ const submit = async () => {
   font-size: 1.5em;
 
   border-bottom: solid 1px;
-  a { 
-    color: var(--default-text-color); 
+  a {
+    color: var(--default-text-color);
     text-decoration: none;
   }
 }
@@ -126,7 +136,7 @@ const submit = async () => {
 
       background-color: var(--secondary-bg-color);
       border-radius: var(--default-border-radius);
-  
+
       &:focus {
         outline: none;
       }
@@ -165,7 +175,8 @@ const submit = async () => {
 
   background-color: var(--secondary-bg-color);
   border-radius: var(--default-border-radius);
-  video, audio {
+  video,
+  audio {
     display: flex;
     align-items: center;
 
@@ -175,7 +186,8 @@ const submit = async () => {
   .dataList {
     width: calc(60% - 1rem);
     padding: 0.5rem;
-    p,a {
+    p,
+    a {
       margin: 0.3rem auto;
     }
   }

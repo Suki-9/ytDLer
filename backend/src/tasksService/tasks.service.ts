@@ -7,7 +7,7 @@ import { readdirSync, rmSync } from 'fs';
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
 
-  @Cron('* * 4 * * *') //CronExpression.EVERY_10_SECONDS)
+  @Cron('* * 4 * * *')
   handleCron() {
     readdirSync('./Public/DL').forEach((fileName: string) => {
       rmSync(`./Public/DL/${fileName}`);

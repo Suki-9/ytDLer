@@ -1,4 +1,4 @@
-import { App } from "vue";
+import { App } from 'vue';
 
 export const $API_URL: string = import.meta.env.VITE_API_URL;
 
@@ -8,7 +8,7 @@ const VITE_env = {
   },
 };
 
-declare module "vue" {
+declare module 'vue' {
   interface ComponentCustomProperties {
     $API_URL: string;
   }

@@ -1,6 +1,6 @@
 // css -------------------------------------------------///
 import './styles/main.css';
-import './assets/fontello/css/fontello.css'
+import './assets/fontello/css/fontello.css';
 
 // TS Module -------------------------------------------///
 import { createApp } from 'vue';

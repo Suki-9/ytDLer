@@ -5,15 +5,22 @@ import { fetchAPI } from '../scripts/fetchAPI';
 import { $API_URL } from '../plugins/vite_env';
 
 const fetchStatus = ref<'loading' | 'completed'>();
+const noURL = ref<boolean>(false)
+
+const mediaTypes = {
+  movie: ['mp4','avi'],
+  audio: ['mp3','wav']
+}
 
 const DLURL = ref<string>();
 const options = ref<Record<string, boolean>>({
   soundOnly: false,
+  silent: false,
 });
 
 const fetchResponse = ref<Endpoints['youtube-dl']['res'] | undefined>();
 
-const submit = async () => { 
+const submit = async () => {
   fetchStatus.value = 'loading';
   fetchResponse.value = await fetchAPI('youtube-dl', {
     id: genUuid(),
@@ -32,9 +39,12 @@ const submit = async () => {
   <div :class="$style.formBox">
     <form>
       <input :class="$style.inputRoot" placeholder="Download YouTube URL" v-model="DLURL" />
+      <p></p>
     </form>
-    <i class="icon-download" aria-label="Download" @click="DLURL && submit()"></i>
+    <i class="icon-download" aria-label="Download" @click="DLURL ? submit() : noURL = true"></i>
   </div>
+
+  <p :class="$style.attention" v-show="noURL">URLを入力してください。</p>
 
   <div :class="$style.optionsBox">
     <a
@@ -42,6 +52,17 @@ const submit = async () => {
       :class="[$style.optionButton, { [$style.activeOption]: options.soundOnly }]"
       >音声のみ(WAV)</a
     >
+    <a
+      @click="options.silent = !options.silent"
+      v-show="!options.soundOnly"
+      :class="[$style.optionButton, { [$style.activeOption]: options.silent }]"
+      >音声無し</a
+    >
+    <a :class="$style.optionButton">
+      <select>
+        <option v-for="mediaType in mediaTypes[options.soundOnly ? 'audio' : 'movie']">拡張子 : {{ mediaType }}</option>
+      </select>
+    </a>
   </div>
 
   <div :class="$style.mediaContainer" v-if="fetchResponse && fetchStatus == 'completed'">
@@ -141,28 +162,58 @@ const submit = async () => {
     }
   }
 
-  i::before {
-    margin: 0;
-    padding: 0 1rem;
+  i {
+    border-radius: 0 var(--default-border-radius) var(--default-border-radius) 0 ;
 
-    text-align: center;
-    font-size: 1.5rem;
+    background-color: rgba(1,1,1,0.1);
 
-    background-color: ;
+    &:hover {
+      background-color: rgba(1,1,1,0.2);
+    }
+
+    &::before {
+      display: flex;
+      align-items: center;
+
+      margin: 0;
+      padding: 0 1rem;
+
+      height: 2.5rem;
+
+      text-align: center;
+      font-size: 1.5rem;
+    }
   }
 }
 
+.attention {
+  margin: 0;
+
+  color: red;
+  font-size: 80%;
+}
 .optionsBox {
   display: flex;
 
   .optionButton {
     padding: 0.5rem;
+    margin: 0 0.1rem;
 
     font-size: 90%;
     user-select: none;
 
     background-color: var(--secondary-bg-color);
     border-radius: var(--default-border-radius);
+
+    select {
+      font-size: 0.9rem;
+      border: none;
+      background-color: var(--secondary-bg-color);
+
+      &:focus {
+        outline: none;
+      }
+    }
   }
 
   .activeOption {

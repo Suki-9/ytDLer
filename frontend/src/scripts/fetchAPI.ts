@@ -5,7 +5,7 @@ export const fetchAPI = async <T extends keyof Endpoints>(
   body: Endpoints[T]['req'],
   method: 'POST' | 'GET' = 'POST',
 ): Promise<Endpoints[T]['res'] | undefined> => {
-  return await fetch(`${$API_URL}/api/${endpoints}`, {
+  return fetch(`${$API_URL}/api/${endpoints}`, {
     method: method,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),

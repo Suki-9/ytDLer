@@ -4,19 +4,24 @@ import { genUuid } from '../scripts/UUID';
 import { fetchAPI } from '../scripts/fetchAPI';
 import { $API_URL } from '../plugins/vite_env';
 
+const fetchStatus = ref<'loading' | 'completed'>();
 
 const DLURL = ref<string>();
 const options = ref<Record<string, boolean>>({
   soundOnly: false,
 });
-const fetchResponse = ref<Endpoints['youtube-dl']['res']>();
 
-const submit = async () =>
+const fetchResponse = ref<Endpoints['youtube-dl']['res'] | undefined>();
+
+const submit = async () => { 
+  fetchStatus.value = 'loading';
   fetchResponse.value = await fetchAPI('youtube-dl', {
     id: genUuid(),
     url: DLURL.value!,
     options: options.value,
   })
+    .finally(() => fetchStatus.value = 'completed');
+}
 </script>
 
 <template>
@@ -39,7 +44,7 @@ const submit = async () =>
     >
   </div>
 
-  <div :class="$style.mediaContainer" v-if="fetchResponse">
+  <div :class="$style.mediaContainer" v-if="fetchResponse && fetchStatus == 'completed'">
     <video v-if="!options.soundOnly">
       <source :src="`${$API_URL}${fetchResponse.url}`" />
     </video>
@@ -65,6 +70,9 @@ const submit = async () =>
       >
     </div>
   </div>
+  <div>
+    <p>処理中です。</p>
+  </div>
 </template>
 
 <style module lang="scss">
@@ -79,16 +87,25 @@ const submit = async () =>
   font-size: 1.5em;
 
   border-bottom: solid 1px;
+
   a {
     color: var(--default-text-color);
     text-decoration: none;
   }
 }
+
 .formBox {
   display: flex;
   align-items: center;
 
-  width: 60%;
+  @media screen and (max-width: calc(900px * 0.6 + 1rem)){
+    width: 100%;
+  }
+
+  @media screen and (min-width: calc(900px * 0.6 + 1rem + 1px)) {
+    width: 60%;
+    min-width: calc(900px * 0.6);
+  }
 
   margin: 0.5rem;
 
@@ -123,16 +140,21 @@ const submit = async () =>
       }
     }
   }
+
   i::before {
     margin: 0;
     padding: 0 1rem;
 
     text-align: center;
     font-size: 1.5rem;
+
+    background-color: ;
   }
 }
+
 .optionsBox {
   display: flex;
+
   .optionButton {
     padding: 0.5rem;
 
@@ -142,10 +164,12 @@ const submit = async () =>
     background-color: var(--secondary-bg-color);
     border-radius: var(--default-border-radius);
   }
+
   .activeOption {
     background-color: var(--tertiary-bg-color);
   }
 }
+
 .mediaContainer {
   display: flex;
 
@@ -156,6 +180,7 @@ const submit = async () =>
 
   background-color: var(--secondary-bg-color);
   border-radius: var(--default-border-radius);
+
   video,
   audio {
     display: flex;
@@ -164,13 +189,16 @@ const submit = async () =>
     width: 40%;
     border-radius: var(--default-border-radius);
   }
+
   .dataList {
     width: calc(60% - 1rem);
     padding: 0.5rem;
+
     p,
     a {
       margin: 0.3rem auto;
     }
   }
 }
+
 </style>

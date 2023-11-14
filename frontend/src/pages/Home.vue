@@ -91,9 +91,8 @@ const submit = async () => {
       >
     </div>
   </div>
-  <div>
-    <p>処理中です。</p>
-  </div>
+
+  <p v-if="fetchStatus == 'loading'">処理中です。</p>
 </template>
 
 <style module lang="scss">

@@ -1,41 +1,22 @@
-<script setup lang="ts">
+<script setup lang='ts'>
 import { ref } from 'vue';
 import { genUuid } from '../scripts/UUID';
-//@ts-ignore
+import { fetchAPI } from '../scripts/fetchAPI';
 import { $API_URL } from '../plugins/vite_env';
 
-const isActive = ref<Record<string, boolean>>({
+
+const DLURL = ref<string>();
+const options = ref<Record<string, boolean>>({
   soundOnly: false,
 });
-const DLURL = ref<string>('');
-const fetchResponse = ref<{
-  msg: string;
-  url: string;
-  title: string;
-  uploadDate: string;
-  videoId: string;
-  viewCount: string;
-}>();
-const submit = async () => {
-  if (DLURL.value !== '') {
-    fetchResponse.value = await fetch(`${$API_URL}/api/youtube-dl`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: genUuid(),
-        url: DLURL.value,
-        options: {
-          ...isActive.value,
-        },
-      }),
-    })
-      .then(response => (response.ok ? response.json() : undefined))
-      .then(data => data)
-      .catch(() => {
-        return undefined;
-      });
-  }
-};
+const fetchResponse = ref<Endpoints['youtube-dl']['res']>();
+
+const submit = async () =>
+  fetchResponse.value = await fetchAPI('youtube-dl', {
+    id: genUuid(),
+    url: DLURL.value!,
+    options: options.value,
+  })
 </script>
 
 <template>
@@ -47,19 +28,19 @@ const submit = async () => {
     <form>
       <input :class="$style.inputRoot" placeholder="Download YouTube URL" v-model="DLURL" />
     </form>
-    <i class="icon-download" aria-label="Download" @click="submit()"></i>
+    <i class="icon-download" aria-label="Download" @click="DLURL && submit()"></i>
   </div>
 
   <div :class="$style.optionsBox">
     <a
-      @click="isActive.soundOnly = !isActive.soundOnly"
-      :class="[$style.optionButton, { [$style.activeOption]: isActive.soundOnly }]"
+      @click="options.soundOnly = !options.soundOnly"
+      :class="[$style.optionButton, { [$style.activeOption]: options.soundOnly }]"
       >音声のみ(WAV)</a
     >
   </div>
 
   <div :class="$style.mediaContainer" v-if="fetchResponse">
-    <video v-if="!isActive.soundOnly">
+    <video v-if="!options.soundOnly">
       <source :src="`${$API_URL}${fetchResponse.url}`" />
     </video>
     <div :class="$style.dataList">

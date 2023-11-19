@@ -15,9 +15,11 @@ const mediaTypes = ref({
 const DLURL = ref<string>();
 const options = ref<{
   silent: boolean;
+  soundOnly: boolean;
   mediaType: string;
 }>({
   silent: false,
+  soundOnly: false,
   mediaType: 'mp4',
 });
 

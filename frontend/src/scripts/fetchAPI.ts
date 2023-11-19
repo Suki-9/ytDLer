@@ -12,7 +12,4 @@ export const fetchAPI = async <T extends keyof Endpoints>(
   })
     .then(response => (response.ok ? response.json() : undefined))
     .then(data => data)
-    .catch(() => {
-      return undefined;
-    });
 }

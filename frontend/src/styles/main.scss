@@ -4,11 +4,18 @@
   align-items: center;
 }
 
+.container {
+  margin: 0 0 1rem 0;
+  max-width: 900px;
+}
+
 form[class='container'] {
   width: 100%;
   max-width: 900px;
   fieldset {
       border: solid 1px;
+
+      margin: 0;
 
       legend {
         font-size: 140%;
@@ -64,5 +71,34 @@ form[class='container'] {
           border-radius: 0.5rem;
         }
       }
+  }
+}
+
+div[class='container'] {
+  display: flex;
+
+  border: solid 1px;
+  width: calc(100% - 2rem);
+  max-width: calc(900px - 2rem);
+  padding: 1rem;
+
+  video {
+    width: 40%;
+    border-radius: 7px;
+  }
+  ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    width: 60%;
+
+    margin: 0;
+    padding: 0 1rem;
+    li {
+      &::marker {
+        content: none;
+      }
     }
+  }
 }

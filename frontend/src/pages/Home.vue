@@ -13,7 +13,10 @@ const mediaTypes = ref({
 })
 
 const DLURL = ref<string>();
-const options = ref<Record<string, boolean | string>>({
+const options = ref<{
+  silent: boolean;
+  mediaType: string;
+}>({
   silent: false,
   mediaType: 'mp4',
 });
@@ -27,7 +30,6 @@ const submit = async () => {
     url: DLURL.value!,
     options: options.value,
   })
-    .finally(() => fetchStatus.value = 'completed');
 }
 </script>
 
@@ -57,56 +59,25 @@ const submit = async () => {
       <div :class="['form-group', $style.submit]">
         <button 
           class="btn btn-default"
-          type="submit" 
+          type="button"
           @click="DLURL ? submit() : noURL = true">Submit</button>
       </div>
     </fieldset>
   </form>
-
-  <div v-if="fetchResponse && fetchStatus == 'completed'">
-    <video v-if="!options.soundOnly">
+  <div class="container" v-if="fetchResponse">
+    <video controls>
       <source :src="`${$API_URL}${fetchResponse.url}`" />
     </video>
-    <div>
-      <p>
-        Title : <span>{{ fetchResponse.title ?? 'タイトルがありません' }}</span>
-      </p>
-      <p>
-        Upload Date : <span>{{ fetchResponse.uploadDate ?? '投稿日時がありません' }}</span>
-      </p>
-      <p>
-        View Count : <span>{{ fetchResponse.viewCount ?? '再生数がありません' }}</span>
-      </p>
-      <p>
-        URL : <a :herf="DLURL">{{ DLURL }}</a>
-      </p>
-      <a
-        :href="`${$API_URL}${fetchResponse.url}`"
-        :download="`${fetchResponse.url}`"
-        target="_blank"
-        rel="noopener noreferrer"
-        >Click to Download!</a
-      >
-    </div>
+    <ul>
+      <li>{{ fetchResponse.title }}</li>
+      <li>投稿日時{{ fetchResponse.uploadDate }}</li>
+      <li>再生回数{{ fetchResponse.viewCount }}</li>
+      <li><a :href="`${$API_URL}${ fetchResponse.url }`">ダウンロード</a></li>
+    </ul>
   </div>
-  <p v-if="fetchStatus == 'loading'">処理中です。</p>
 </template>
 
 <style module lang="scss">
-.head {
-  width: 98%;
-
-  padding: 0.5% 1%;
-
-  color: rgb(1,1,1);
-  font-size: 160%;
-
-  border-bottom: solid 1px;
-}
-.dlForm {
-  width: 90%!important;
-  min-width: 950px;
-}
 .submit {
   display: flex;
   justify-content: flex-end;

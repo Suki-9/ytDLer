@@ -3,7 +3,7 @@ type Endpoints = {
     req: {
       id: string;
       url: string;
-      options: Record<string, boolean>;
+      options: Record<string, boolean | string>;
     },
     res: {
       msg: string;

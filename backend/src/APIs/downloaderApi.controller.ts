@@ -10,7 +10,12 @@ export class DownloaderApiController {
 
   @Post('youtube-dl')
   async Downloader(
-    @Body() body: { url: string; id: string; options: Record<string, boolean> },
+    @Body()
+    body: {
+      url: string;
+      id: string;
+      options: Record<string, boolean | string>;
+    },
     @Res() res: Response,
   ): Promise<void> {
     try {

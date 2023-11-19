@@ -11,7 +11,7 @@ export class DownloaderApiService {
   Downloader = async (
     url: string,
     id: string,
-    options: Record<string, boolean>,
+    options: Record<string, boolean | string>,
   ): Promise<Record<string, string>> => {
     return new Promise(async (resolve) => {
       let downloadURL = `/DL/result_${id}.mp4`;

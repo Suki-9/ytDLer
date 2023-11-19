@@ -5,17 +5,17 @@ import { fetchAPI } from '../scripts/fetchAPI';
 import { $API_URL } from '../plugins/vite_env';
 
 const fetchStatus = ref<'loading' | 'completed'>();
-const noURL = ref<boolean>(false)
+const noURL = ref<boolean>(false);
 
-const mediaTypes = {
+const mediaTypes = ref({
   movie: ['mp4','avi'],
-  audio: ['mp3','wav']
-}
+  audio: ['mp3', 'wav'],
+})
 
 const DLURL = ref<string>();
-const options = ref<Record<string, boolean>>({
-  soundOnly: false,
+const options = ref<Record<string, boolean | string>>({
   silent: false,
+  mediaType: 'mp4',
 });
 
 const fetchResponse = ref<Endpoints['youtube-dl']['res'] | undefined>();
@@ -32,44 +32,42 @@ const submit = async () => {
 </script>
 
 <template>
-  <div :class="$style.head">
-    <RouterLink to="/">YouTube Downloader!</RouterLink>
-  </div>
+  <form class='container'>
+    <fieldset>
+      <legend>YouTube Downloader!</legend>
+      <div class="form-group">
+        <label>Download YouTube URL<i class="icon-download"></i></label>
+        <input type="text" name="url" placeholder="pleace url" required v-model="DLURL" />
+      </div>
+      <fieldset>
+        <legend>Options</legend>
+        <div class="form-group">
+          <label>No audio (silent): </label>
+          <input type="checkbox" v-model="options.silent">
+        </div>
+        <div class="form-group">
+          <label>Extension type:</label>
+          <select
+            v-model="options.mediaType"
+            @change="options.soundOnly">
+            <option v-for="mediaType in [...mediaTypes.audio, ...mediaTypes.movie]">{{ mediaType }}</option>
+          </select>
+        </div>
+      </fieldset>
+      <div :class="['form-group', $style.submit]">
+        <button 
+          class="btn btn-default"
+          type="submit" 
+          @click="DLURL ? submit() : noURL = true">Submit</button>
+      </div>
+    </fieldset>
+  </form>
 
-  <div :class="$style.formBox">
-    <form>
-      <input :class="$style.inputRoot" placeholder="Download YouTube URL" v-model="DLURL" />
-      <p></p>
-    </form>
-    <i class="icon-download" aria-label="Download" @click="DLURL ? submit() : noURL = true"></i>
-  </div>
-
-  <p :class="$style.attention" v-show="noURL">URLを入力してください。</p>
-
-  <div :class="$style.optionsBox">
-    <a
-      @click="options.soundOnly = !options.soundOnly"
-      :class="[$style.optionButton, { [$style.activeOption]: options.soundOnly }]"
-      >音声のみ(WAV)</a
-    >
-    <a
-      @click="options.silent = !options.silent"
-      v-show="!options.soundOnly"
-      :class="[$style.optionButton, { [$style.activeOption]: options.silent }]"
-      >音声無し</a
-    >
-    <a :class="$style.optionButton">
-      <select>
-        <option v-for="mediaType in mediaTypes[options.soundOnly ? 'audio' : 'movie']">拡張子 : {{ mediaType }}</option>
-      </select>
-    </a>
-  </div>
-
-  <div :class="$style.mediaContainer" v-if="fetchResponse && fetchStatus == 'completed'">
+  <div v-if="fetchResponse && fetchStatus == 'completed'">
     <video v-if="!options.soundOnly">
       <source :src="`${$API_URL}${fetchResponse.url}`" />
     </video>
-    <div :class="$style.dataList">
+    <div>
       <p>
         Title : <span>{{ fetchResponse.title ?? 'タイトルがありません' }}</span>
       </p>
@@ -91,164 +89,28 @@ const submit = async () => {
       >
     </div>
   </div>
-
   <p v-if="fetchStatus == 'loading'">処理中です。</p>
 </template>
 
 <style module lang="scss">
 .head {
-  display: flex;
-  align-items: center;
+  width: 98%;
 
-  height: 2em;
-  width: calc(100% - 2rem);
+  padding: 0.5% 1%;
 
-  padding: 0 1rem;
-  font-size: 1.5em;
+  color: rgb(1,1,1);
+  font-size: 160%;
 
   border-bottom: solid 1px;
-
-  a {
-    color: var(--default-text-color);
-    text-decoration: none;
-  }
 }
-
-.formBox {
+.dlForm {
+  width: 90%!important;
+  min-width: 950px;
+}
+.submit {
   display: flex;
-  align-items: center;
+  justify-content: flex-end;
 
-  @media screen and (max-width: calc(900px * 0.6 + 1rem)){
-    width: 100%;
-  }
-
-  @media screen and (min-width: calc(900px * 0.6 + 1rem + 1px)) {
-    width: 60%;
-    min-width: calc(900px * 0.6);
-  }
-
-  margin: 0.5rem;
-
-  background-color: var(--secondary-bg-color);
-  border-radius: var(--default-border-radius);
-
-  form {
-    display: flex;
-    align-items: center;
-
-    width: calc(100% - 4rem);
-    height: fit-content;
-
-    padding: 0 1rem;
-
-    input {
-      width: calc(100%);
-      height: 2.5rem;
-
-      padding: 0;
-      margin: 0;
-
-      font-size: 110%;
-
-      border: none;
-
-      background-color: var(--secondary-bg-color);
-      border-radius: var(--default-border-radius);
-
-      &:focus {
-        outline: none;
-      }
-    }
-  }
-
-  i {
-    border-radius: 0 var(--default-border-radius) var(--default-border-radius) 0 ;
-
-    background-color: rgba(1,1,1,0.1);
-
-    &:hover {
-      background-color: rgba(1,1,1,0.2);
-    }
-
-    &::before {
-      display: flex;
-      align-items: center;
-
-      margin: 0;
-      padding: 0 1rem;
-
-      height: 2.5rem;
-
-      text-align: center;
-      font-size: 1.5rem;
-    }
-  }
+  margin-top: 1%;
 }
-
-.attention {
-  margin: 0;
-
-  color: red;
-  font-size: 80%;
-}
-.optionsBox {
-  display: flex;
-
-  .optionButton {
-    padding: 0.5rem;
-    margin: 0 0.1rem;
-
-    font-size: 90%;
-    user-select: none;
-
-    background-color: var(--secondary-bg-color);
-    border-radius: var(--default-border-radius);
-
-    select {
-      font-size: 0.9rem;
-      border: none;
-      background-color: var(--secondary-bg-color);
-
-      &:focus {
-        outline: none;
-      }
-    }
-  }
-
-  .activeOption {
-    background-color: var(--tertiary-bg-color);
-  }
-}
-
-.mediaContainer {
-  display: flex;
-
-  margin: 0.5rem;
-  padding: 0.5rem;
-  width: 80%;
-  max-width: calc(1000px - 1rem);
-
-  background-color: var(--secondary-bg-color);
-  border-radius: var(--default-border-radius);
-
-  video,
-  audio {
-    display: flex;
-    align-items: center;
-
-    width: 40%;
-    border-radius: var(--default-border-radius);
-  }
-
-  .dataList {
-    width: calc(60% - 1rem);
-    padding: 0.5rem;
-
-    p,
-    a {
-      margin: 0.3rem auto;
-    }
-  }
-}
-
 </style>

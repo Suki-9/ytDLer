@@ -4,7 +4,7 @@ type Endpoints = {
       id: string;
       url: string;
       options: Record<string, boolean | string>;
-    },
+    };
     res: {
       msg: string;
       url: string;
@@ -12,6 +12,6 @@ type Endpoints = {
       uploadDate: string;
       videoId: string;
       viewCount: string;
-    },
-  }
-}
+    };
+  };
+};

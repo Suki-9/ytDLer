@@ -1,4 +1,4 @@
-<script setup lang='ts'>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { genUuid } from '../scripts/UUID';
 import { fetchAPI } from '../scripts/fetchAPI';
@@ -32,12 +32,12 @@ const submit = async () => {
       ...options.value,
       soundOnly: options.value.mimeType in mimeTypes.audio,
     },
-  })
-}
+  });
+};
 </script>
 
 <template>
-  <form class='container'>
+  <form class="container">
     <fieldset>
       <legend>YouTube Downloader!</legend>
       <div class="form-group">
@@ -48,22 +48,17 @@ const submit = async () => {
         <legend>Options</legend>
         <div class="form-group">
           <label>Extension type:</label>
-          <select
-            v-model="options.mimeType"
-            @change="options.soundOnly">
+          <select v-model="options.mimeType" @change="options.soundOnly">
             <option v-for="mimeType in Object.values(mimeTypes).flat()">{{ mimeType }}</option>
           </select>
         </div>
         <div v-if="mimeTypes.audio.indexOf(options.mimeType) == -1" class="form-group">
           <label>No audio (silent): </label>
-          <input type="checkbox" v-model="options.silent">
+          <input type="checkbox" v-model="options.silent" />
         </div>
       </fieldset>
       <div :class="['form-group', $style.submit]">
-        <button 
-          class="btn btn-default"
-          type="button"
-          @click="DLURL ? submit() : noURL = true">Submit</button>
+        <button class="btn btn-default" type="button" @click="DLURL ? submit() : (noURL = true)">Submit</button>
       </div>
     </fieldset>
   </form>
@@ -75,7 +70,7 @@ const submit = async () => {
       <li>{{ fetchResponse.title }}</li>
       <li>投稿日時{{ fetchResponse.uploadDate }}</li>
       <li>再生回数{{ fetchResponse.viewCount }}</li>
-      <li><a :href="`${$API_URL}${ fetchResponse.url }`">ダウンロード</a></li>
+      <li><a :href="`${$API_URL}${fetchResponse.url}`">ダウンロード</a></li>
     </ul>
   </div>
 </template>

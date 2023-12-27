@@ -7,20 +7,18 @@ import { $API_URL } from '../plugins/vite_env';
 const fetchStatus = ref<'loading' | 'completed'>();
 const noURL = ref<boolean>(false);
 
-const mediaTypes = ref({
-  movie: ['mp4','avi'],
-  audio: ['mp3', 'wav'],
-})
+const mimeTypes = {
+  audio: ['audio/mp3', 'audio/wav', 'audio/flac', 'audio/ogg'],
+  video: ['video/mp4', 'video/avi'],
+} as const;
 
 const DLURL = ref<string>();
 const options = ref<{
   silent: boolean;
-  soundOnly: boolean;
-  mediaType: string;
+  mimeType: string;
 }>({
   silent: false,
-  soundOnly: false,
-  mediaType: 'mp4',
+  mimeType: mimeTypes.video[0],
 });
 
 const fetchResponse = ref<Endpoints['youtube-dl']['res'] | undefined>();
@@ -30,7 +28,10 @@ const submit = async () => {
   fetchResponse.value = await fetchAPI('youtube-dl', {
     id: genUuid(),
     url: DLURL.value!,
-    options: options.value,
+    options: {
+      ...options.value,
+      soundOnly: options.value.mimeType in mimeTypes.audio,
+    },
   })
 }
 </script>
@@ -46,16 +47,16 @@ const submit = async () => {
       <fieldset>
         <legend>Options</legend>
         <div class="form-group">
-          <label>No audio (silent): </label>
-          <input type="checkbox" v-model="options.silent">
-        </div>
-        <div class="form-group">
           <label>Extension type:</label>
           <select
-            v-model="options.mediaType"
+            v-model="options.mimeType"
             @change="options.soundOnly">
-            <option v-for="mediaType in [...mediaTypes.audio, ...mediaTypes.movie]">{{ mediaType }}</option>
+            <option v-for="mimeType in Object.values(mimeTypes).flat()">{{ mimeType }}</option>
           </select>
+        </div>
+        <div v-if="mimeTypes.audio.indexOf(options.mimeType) == -1" class="form-group">
+          <label>No audio (silent): </label>
+          <input type="checkbox" v-model="options.silent">
         </div>
       </fieldset>
       <div :class="['form-group', $style.submit]">

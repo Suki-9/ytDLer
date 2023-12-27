@@ -7,3 +7,11 @@ type YtdlPayload = {
     mimeType: string;
   };
 };
+
+type YtdlResponse = {
+  url: string;
+  title: string;
+  uploadDate: string;
+  videoId: string;
+  viewCount: string;
+};

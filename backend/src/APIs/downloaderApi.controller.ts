@@ -15,7 +15,11 @@ export class DownloaderApiController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      if (body.options.mimeType in this.ytDownloader.mimeType)
+      if (
+        Object.values(this.ytDownloader.mimeTypes)
+          .flat()
+          .indexOf(body.options.mimeType) !== -1
+      ) {
         res.status(200).json({
           msg: 'DL Success!',
           url: body.url,
@@ -25,6 +29,7 @@ export class DownloaderApiController {
             body.options,
           )),
         });
+      }
     } catch (err) {
       console.error(err);
       res.status(500).json({ err: 'DL fail!!!' });

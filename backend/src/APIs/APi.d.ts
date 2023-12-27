@@ -1,10 +1,14 @@
+type MimeTypes = {
+  audio: 'audio/mp3' | 'audio/wav' | 'audio/flac' | 'audio/ogg';
+  video: 'video/mp4' | 'video/avi';
+};
+
 type YtdlPayload = {
   url: string;
   id: string;
   options: {
     silent: boolean;
-    soundOnly: boolean;
-    mimeType: string;
+    mimeType: MimeTypes['audio'] | MimeTypes['video'];
   };
 };
 

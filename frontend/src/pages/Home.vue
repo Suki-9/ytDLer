@@ -48,11 +48,11 @@ const submit = async () => {
         <legend>Options</legend>
         <div class="form-group">
           <label>Extension type:</label>
-          <select v-model="options.mimeType" @change="options.soundOnly">
+          <select v-model="options.mimeType">
             <option v-for="mimeType in Object.values(mimeTypes).flat()">{{ mimeType }}</option>
           </select>
         </div>
-        <div v-if="mimeTypes.audio.indexOf(options.mimeType) == -1" class="form-group">
+        <div v-if="mimeTypes.audio.indexOf(options.mimeType as unknown as typeof mimeTypes.audio) == -1" class="form-group">
           <label>No audio (silent): </label>
           <input type="checkbox" v-model="options.silent" />
         </div>

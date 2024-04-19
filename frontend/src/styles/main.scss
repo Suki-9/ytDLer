@@ -1,104 +1,175 @@
+@import url("https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500&display=swap");
+@import './common.scss';
+@import './theme/light.scss';
+
+:root {
+  background-color: var(--color-bg-primary);
+  color: var(--color-font-primary);
+
+  font-family: "Zen Maru Gothic", sans-serif;
+  --default-border-radius: 7px;
+
+  --primary-font-size: 2em;
+  font-size: 110%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+
+  overscroll-behavior-y: none;
+}
+
+div {
+  box-sizing: border-box;
+}
+
 #app {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+
+  @media (width < 700px) {
+    flex-direction: column;
+    & > * {
+      flex-grow: 1;
+    }
+  }
+
+  @media (width > 700px) or (width: 700px) {
+
+  }
 }
 
 .container {
-  margin: 0 0 1rem 0;
-  max-width: 900px;
-}
+  display: flex;
+  flex-direction: column;
 
-form[class='container'] {
-  width: 100%;
-  max-width: 900px;
+  margin: 0 auto;
+
+  @media (width < 700px) {
+    width: 95%;
+    flex-direction: column;
+  }
+
+  @media (width > 700px) or (width: 700px) {
+    flex-grow: 0.95;
+  }
+
   fieldset {
-    border: solid 1px;
+    border: solid 2px;
+    border-radius: 7px;
 
     margin: 0;
+    padding: .5rem;
 
     legend {
-      font-size: 140%;
+      font-size: 1.2em;
+      font-weight: 600;
     }
 
     .form-group {
-      display: flex;
-      align-items: center;
+      @extend .flex-center;
 
-      label {
-        margin-right: 1rem;
-
-        white-space: nowrap;
+      @media (width < 700px) {
+        width: 100%;
       }
-
-      input {
-        font-size: 100%;
-
-        &[type='text'] {
-          height: 1.4rem;
-          width: 100%;
-          padding: 0 0.5rem;
-
-          border: solid 1px;
-          border-radius: 0.5rem;
-
-          &:focus {
-            outline: none;
-          }
-        }
-
-        &[type='checkbox'] {
-          width: 1rem;
-          height: 1rem;
-
-          margin: 0;
-        }
+        
+      @media (width > 700px) and (width: 700px) {
+        width: 50%;
       }
+    }
+  }
 
-      select {
-        &:focus {
-          outline: none;
-        }
-      }
+  & > table, video {
+    margin: .5rem auto;
+    padding: 0;
+    border-radius: 7px;
 
-      button {
-        height: 1.4rem;
-        padding: 0 1rem;
+    @media (width < 700px) {
+      width: 90%;
+    }
 
-        font-size: 110%;
-
-        border: solid 1px;
-        border-radius: 0.5rem;
-      }
+    @media (width > 700px) and (width: 700px) {
+      width: 100%;
     }
   }
 }
 
-div[class='container'] {
-  display: flex;
+ul {
+  padding: 0;
+}
 
-  border: solid 1px;
-  width: calc(100% - 2rem);
-  max-width: calc(900px - 2rem);
-  padding: 1rem;
+li {
+  
+  list-style: none;
+}
 
-  video {
-    width: 40%;
-    border-radius: 7px;
+/*text*/
+p,
+a,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  color: var(--color-font-primary);
+  text-decoration: none;
+
+  &:active {
+    background-color: none;
   }
-  ul {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
+}
 
-    width: 60%;
+.h1 {
+  font-size: var(--primary-font-size);
+}
 
-    margin: 0;
-    padding: 0 1rem;
-    li {
-      &::marker {
-        content: none;
-      }
-    }
+.h2 {
+  font-size: calc(var(--primary-font-size) * 0.875);
+}
+
+.h3 {
+  font-size: calc(var(--primary-font-size) * 0.75);
+}
+
+.h4 {
+  font-size: calc(var(--primary-font-size) * 0.625);
+}
+
+/*form*/
+input,
+select,
+textarea {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  font-family: "Zen Maru Gothic", sans-serif;
+  border: none;
+
+  font-size: 1rem;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  &::placeholder,
+  &:focus::placeholder {
+    position: absolute;
+    top: 0;
+    font-family: "Zen Maru Gothic", sans-serif;
+    color: rgb(110, 110, 110);
   }
+
+  &:focus {
+    outline: none;
+    font-family: "Zen Maru Gothic", sans-serif;
+  }
+}
+
+.material-symbols-outlined {
+  user-select: none;
 }

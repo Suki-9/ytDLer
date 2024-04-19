@@ -1,9 +1,6 @@
-.icon-cancel:before {
-  content: '\e800';
-} /* '' */
-.icon-download:before {
-  content: '\e801';
-} /* '' */
-.icon-youtube-play:before {
-  content: '\f16a';
-} /* '' */
+
+.icon-cancel:before { content: '\e800'; } /* '' */
+.icon-download:before { content: '\e801'; } /* '' */
+.icon-info-circled-alt:before { content: '\f086'; } /* '' */
+.icon-github-circled:before { content: '\f09b'; } /* '' */
+.icon-youtube-play:before { content: '\f16a'; } /* '' */

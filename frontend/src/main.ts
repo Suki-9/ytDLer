@@ -3,7 +3,7 @@ import './styles/main.scss';
 import './assets/fontello/css/fontello.css';
 
 // TS Module -------------------------------------------///
-import { createApp, ref, Ref } from 'vue';
+import { createApp, ref } from 'vue';
 
 // plugins ---------------------------------------------///
 import VITE_env from './plugins/vite_env';

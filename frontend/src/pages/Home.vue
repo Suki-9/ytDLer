@@ -24,14 +24,6 @@ const thumbnail = ref<string>();
 const DLURL = ref<string>();
 const fetchResult = ref<Endpoints['youtube-dl']['res']>();
 
-fetchResult.value = {
-  url: 'dhfidushfnsduoifbnsduofnsdof',
-  title: 'ちんこ出してみた',
-  uploadDate: 'きのう',
-  videoId: '14dsfsdfsdf',
-  viewCount: 114514,
-};
-
 const options = ref<{
   silent: boolean;
   mimeType:  MimeType,

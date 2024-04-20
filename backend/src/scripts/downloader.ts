@@ -45,7 +45,7 @@ export const downloader = async (
 ): Promise<string> => {
   const task = new Task(url, fileName, mimeType);
   taskQueue.set(id, task);
-  return task.downloade().then((r) => {
+  return task.download().then((r) => {
     taskQueue.delete(id)
     return r;
   });
@@ -77,13 +77,13 @@ class Task {
     return ytdl.getInfo(this.url);
   };
 
-  public async downloade(): Promise<string> {
+  public async download(): Promise<string> {
     try {
-      await this.downloadeAudio();
+      await this.downloadAudio();
     } catch (e) { throw e; }
     if (isVideType(this.mimeType)) {
       try {
-        await this.downloadeVideo();
+        await this.downloadVideo();
         this.state = 'completed';
         return await videoEncode(`${this.fileName}.mp4`, `${this.fileName}.wav`, this.mimeType);
       } catch (e) { throw e; }
@@ -101,7 +101,7 @@ class Task {
     }
   }
 
-  private async downloadeVideo() {
+  private async downloadVideo() {
     const filePath = `./Public/DL/${this.fileName}.mp4`;
     this.stream.video = ytdl(this.url, {
       filter: (format) => format.container === 'mp4',
@@ -114,7 +114,7 @@ class Task {
     });
   }
 
-  private async downloadeAudio() {
+  private async downloadAudio() {
     const filePath = `./Public/DL/${this.fileName}.wav`;
     this.stream.audio = ytdl(this.url, { quality: 'highestaudio' });
     this.stream.audio.pipe(createWriteStream(filePath));

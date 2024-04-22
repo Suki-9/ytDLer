@@ -7,6 +7,7 @@ import LoadingDots from '../components/LoadingDots.vue';
 
 import { ref } from 'vue';
 import { genUuid } from '../scripts/UUID';
+import { transition } from '../scripts/actions.ts';
 import { fetchAPI } from '../scripts/fetchAPI';
 import { $API_URL } from '../plugins/vite_env';
 
@@ -17,7 +18,7 @@ const mimeTypes = {
 } as const;
 type MimeType = typeof mimeTypes[keyof typeof mimeTypes][number]
 
-const fetchStatus = ref<'loading' | 'completed'>();
+const fetchStatus = ref<'loading' | 'failed' | Endpoints['progress']['res']['status']>();
 const progress = ref<number>(0);
 const thumbnail = ref<string>();
 
@@ -34,13 +35,31 @@ const options = ref<{
 
 const submit = async () => {
   fetchStatus.value = 'loading';
-  fetchResult.value = await fetchAPI('youtube-dl', {
-    id: genUuid(),
+
+  const id = genUuid();
+  const result = fetchAPI('youtube-dl', {
+    id: id,
     url: DLURL.value!,
     options: {
       ...options.value,
     },
   });
+
+  const intervalID = setInterval(async () => {
+    const r = await fetchAPI('progress', {
+      id: id,
+    });
+    if (r) {
+      progress.value = r.progress;
+      fetchStatus.value = r.status;
+    }
+  }, 500);
+
+  fetchResult.value = await result;
+  fetchStatus.value = fetchResult.value
+    ? 'completed'
+    : 'failed';
+  clearInterval(intervalID);
 };
 </script>
 
@@ -66,18 +85,28 @@ const submit = async () => {
       </Button>
     </div>
     <div v-if="fetchStatus" :class="['container', $style.result]">
-      <video v-if="thumbnail" :poster="`${$API_URL}${thumbnail}`" controls>
-        <source v-if="fetchResult" :src="`${$API_URL}${fetchResult.url}`" />
+      <video v-if="thumbnail || fetchResult" controls>
+        <source v-if="fetchResult" :src="`${$API_URL}/files/${fetchResult.url}`" />
       </video>
       <div :class="$style.datalist">
-        <p v-if="!fetchResult">Download</p>
-        <p v-else>
-          <span>Processing
-            <LoadingDots />
-          </span>
-          <span>{{ progress }}%</span>
-          <span :style="`clip-path: inset(0 ${100 - progress}% 0 0);`" :class="$style.progressBar"></span>
-        </p>
+        <table v-if="fetchResult">
+          <tr v-for="data in Object.entries(fetchResult)">
+            <td>{{ data[0] }}</td>
+            <td>{{ data[1] }}</td>
+          </tr>
+        </table>
+        <Button type="outlined" :isDisabled="!Boolean(fetchResult)" :class="$style.button"
+          :action="() => fetchResult && transition(`${$API_URL}/files/${fetchResult.url}`)">
+          <p v-if="fetchResult">Download</p>
+          <p v-else>
+            <span>
+              {{ fetchStatus }}
+              <LoadingDots v-if="fetchStatus === 'loading'" />
+            </span>
+            <span>{{ progress }}%</span>
+            <span :style="`clip-path: inset(0 ${100 - progress}% 0 0);`" :class="$style.progressBar"></span>
+          </p>
+        </Button>
       </div>
     </div>
   </div>
@@ -99,21 +128,51 @@ const submit = async () => {
   margin-top: 1%;
 }
 
+.result {
+  width: 100%;
+
+  video {
+    max-width: 100%;
+    height: 15em;
+    margin-top: 1em;
+
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+  }
+
+  table {
+    width: 100%;
+
+    padding: .4em;
+    margin-top: 1em;
+
+    border: solid 2px;
+    border-radius: 7px;
+  }
+}
 
 .datalist {
-  p {
+  .button {
     position: relative;
 
     @extend .flex-center;
     justify-content: space-between;
-    padding: .2em .4em;
 
-    border: solid 1px;
-    border-radius: 7px;
+    padding: .2em .4em;
+    margin-top: 1em;
+
+    width: 100%;
 
     overflow: hidden;
 
-    .progressBar {
+    p {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    p > .progressBar {
       position: absolute;
       top: 0;
       left: 0;

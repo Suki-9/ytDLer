@@ -17,7 +17,7 @@ const fileConvert = async (
   mineType: MimeTypes['audio'],
 ) => new Promise<string>((resolve, reject) => {
   const result = `${createId()}.${mineType.split('/')[1]}`
-  return exec(`ffmpeg -i ${before} ./Public/DL/result/${result}`, (err, stdout, stderr) =>
+  return exec(`ffmpeg -i ${before} ./Public/files/${result}`, (err, stdout, stderr) =>
     err
       ? reject(new Error('convert failed!!'))
       : resolve(result)
@@ -30,7 +30,7 @@ const videoEncode = async (
   mineType: MimeTypes['video'],
 ) => new Promise<string>((resolve, reject) => {
   const result = `${createId()}.${mineType.split('/')[1]}`
-  return exec(`ffmpeg -i ./Public/DL/${videoFileName} -i ./Public/DL/${audioFileName} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 ./Public/DL/result/${result}`,
+  return exec(`ffmpeg -i ./Public/DL/${videoFileName} -i ./Public/DL/${audioFileName} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 ./Public/files/${result}`,
     (err) => err
       ? reject(new Error('convert failed!!'))
       : resolve(result)
@@ -42,12 +42,19 @@ export const downloader = async (
   url: string,
   fileName: string,
   mimeType: MimeTypes[keyof MimeTypes],
-): Promise<string> => {
+) => {
   const task = new Task(url, fileName, mimeType);
   taskQueue.set(id, task);
-  return task.download().then((r) => {
-    taskQueue.delete(id)
-    return r;
+  return task.download().then(async (r) => {
+    const info = await task.getInfo();
+    taskQueue.delete(id);
+    return {
+      url: r,
+      title: info.videoDetails.title,
+      uploadDate: info.videoDetails.uploadDate,
+      videoId: info.videoDetails.videoId,
+      viewCount: Number(info.videoDetails.viewCount),
+    };
   });
 };
 
@@ -78,6 +85,7 @@ class Task {
   };
 
   public async download(): Promise<string> {
+    const info = await this.getInfo();
     try {
       await this.downloadAudio();
     } catch (e) { throw e; }
@@ -125,3 +133,8 @@ class Task {
     });
   }
 }
+
+
+export const getProgress = (id: string) => {
+  const task = taskQueue.get(id);
+};

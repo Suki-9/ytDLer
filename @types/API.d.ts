@@ -26,6 +26,12 @@ type Endpoints = {
       id: string;
     },
     res: {
+      status:
+      | 'init'
+      | 'Audio downloading'
+      | 'Video downloading'
+      | 'Video encoding'
+      | 'completed';
       progress: number,
     },
   },

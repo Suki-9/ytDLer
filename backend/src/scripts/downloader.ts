@@ -59,7 +59,12 @@ export const downloader = async (
 };
 
 class Task {
-  public state: 'completed' | 'working';
+  public state:
+    | 'init'
+    | 'Audio downloading'
+    | 'Video downloading'
+    | 'Video encoding'
+    | 'completed'
 
   private readonly url: string;
   private readonly fileName: string;
@@ -68,16 +73,23 @@ class Task {
     audio?: Readable,
     video?: Readable,
   } = {};
+  private progress: number = 0;
   
   constructor(url: string, fileName: string, mimeType: MimeTypes[keyof MimeTypes]) {
-    this.state = 'working';
+    this.state = 'init';
     this.url = url;
     this.fileName = fileName;
     this.mimeType = mimeType;
   }
 
-  public progress(): number {
-    return 0;
+  public getProgress(): number {
+    if (this.state === 'Audio downloading' && this.stream.audio) return this.progress;
+    else if (this.state === 'Video downloading' && this.stream.video) return this.progress;
+    else if (this.state === 'init') return 0;
+    else if (this.state === 'completed') return 100;
+    else if (this.state === 'Video encoding') return 100;
+
+    return -1;
   }
 
   public async getInfo() {
@@ -85,7 +97,6 @@ class Task {
   };
 
   public async download(): Promise<string> {
-    const info = await this.getInfo();
     try {
       await this.downloadAudio();
     } catch (e) { throw e; }
@@ -111,10 +122,16 @@ class Task {
 
   private async downloadVideo() {
     const filePath = `./Public/DL/${this.fileName}.mp4`;
+
+    this.state = 'Video downloading';
     this.stream.video = ytdl(this.url, {
       filter: (format) => format.container === 'mp4',
     });
     this.stream.video.pipe(createWriteStream(filePath));
+
+    this.stream.video.on('progress', (_, downloaded: number, total: number) => {
+      this.progress = Math.round(downloaded / total * 100);
+    });
 
     return new Promise<void>((resolve, reject) => {
       this.stream.video?.on('end', () => resolve());
@@ -124,8 +141,14 @@ class Task {
 
   private async downloadAudio() {
     const filePath = `./Public/DL/${this.fileName}.wav`;
+
+    this.state = 'Audio downloading';
     this.stream.audio = ytdl(this.url, { quality: 'highestaudio' });
     this.stream.audio.pipe(createWriteStream(filePath));
+
+    this.stream.audio.on('progress', (_, downloaded: number, total: number) => {
+      this.progress = Math.round(downloaded / total * 100);
+    });
 
     return new Promise<void>((resolve, reject) => {
       this.stream.audio?.on('end', () => resolve());
@@ -134,7 +157,20 @@ class Task {
   }
 }
 
-
-export const getProgress = (id: string) => {
+export const getProgress = (id: string): {
+  status: string;
+  progress: number;
+} => {
   const task = taskQueue.get(id);
+  if (task) {
+    return {
+      status: task.state,
+      progress: task.getProgress(),
+    }
+  } else {
+    return {
+      status: 'Not Found',
+      progress: -1,
+    }
+  }
 };

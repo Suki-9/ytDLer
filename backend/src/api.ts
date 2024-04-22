@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { validator } from 'hono/validator'
-import { nullable, z } from 'zod';
+import { z } from 'zod';
 
-import { downloader } from './scripts/downloader';
+import { downloader, getProgress } from './scripts/downloader';
 
 export const api = new Hono();
 
@@ -27,8 +27,32 @@ api.post('youtube-dl',
       url,
       options
     } = c.req.valid('json');
-    const udrl = await downloader(id, url, id, options.mimeType);
-    return c.json({ url: udrl }, 200);
+    try {
+      return c.json({
+        ...(await downloader(id, url, id, options.mimeType))
+      }, 200);
+    } catch (e) {
+      console.log(e);
+      return c.json({ err: ''}, 500);
+    }
+  }
+);
+
+api.post('progress', 
+  validator('json', (val, c) => {
+    const parsed = z.object({
+      id: z.string(),
+    }).safeParse(val);
+
+    return parsed.success
+    ? parsed.data
+    : c.json({ err: 'Invalid params!' }, 401);
+  }),
+  async (c) => {
+    const { id } = c.req.valid('json');
+    const result = getProgress(id);
+
+    return c.json(getProgress(id), ~result.progress ? 200 : 500);
   }
 );
 

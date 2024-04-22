@@ -18,15 +18,12 @@ const root = ref<HTMLElement>();
 const list = ref<HTMLElement>();
 
 onMounted(() => {
-  root.value?.addEventListener('click', () => {
-    if (list.value) {
-      list.value.style.top = `${root.value?.offsetHeight ?? 0}px`;
-      list.value.style.width = `${root.value?.offsetWidth ?? 0}px`;
-      list.value.style.display = list.value.style.display === 'flex' ? 'none' : 'flex';
-    }
-  });
+  if (list.value) {
+    list.value.style.top = `${root.value?.offsetHeight ?? 0}px`;
+    list.value.style.width = `${root.value?.offsetWidth ?? 0}px`;
+  }
 });
-onUnmounted(() => root.value?.removeEventListener('click', () => { }));
+onUnmounted(() => window.removeEventListener('click', () => { }));
 </script>
 
 <template>
@@ -37,14 +34,17 @@ onUnmounted(() => root.value?.removeEventListener('click', () => { }));
     </BottomSheet>
   </ul>
   <div v-else :class="$style.pc" ref="root">
-    <p>{{ inputValue }} ▼</p>
-    <div :class="$style.list" ref="list">
-      <p v-for="option in options" @click="inputValue = option">{{ option }}</p>
+    <p @click="isActive = !isActive">{{ inputValue }} ▼</p>
+    <div v-show="isActive" :class="$style.list" ref="list">
+      <p v-for="option in options" @click="(inputValue = option, isActive = false)">{{ option }}</p>
     </div>
+    <div v-if="isActive" @click="isActive = false" :class="$style.bg"></div>
   </div>
 </template>
 
 <style module lang="scss">
+@import '../styles/common.scss';
+
 .mobile {
   display: flex;
   align-items: center;
@@ -98,7 +98,7 @@ onUnmounted(() => root.value?.removeEventListener('click', () => { }));
     top: 0px;
     left: 0px;
 
-    display: none;
+    display: flex;
     flex-direction: column;
 
     z-index: 1000;
@@ -113,6 +113,10 @@ onUnmounted(() => root.value?.removeEventListener('click', () => { }));
     animation-duration: 0.2s;
     animation-name: moveIn;
   }
+}
+
+.bg {
+  @extend .background-blur;
 }
 
 @keyframes moveIn {

@@ -5,14 +5,14 @@
   "dependencies": {
     "@hono/node-server": "^1.11.0",
     "cron": "^3.1.7",
-    "hono": "^4.2.5",
+    "hono": "^4.2.6",
     "sharp": "^0.33.3",
     "ytdl-core": "^4.11.5",
-    "zod": "^3.22.5"
+    "zod": "^3.23.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "tsx": "^4.7.1"
+    "@types/node": "^20.12.7",
+    "tsx": "^4.7.2"
   },
   "packageManager": "pnpm@8.15.4+sha256.cea6d0bdf2de3a0549582da3983c70c92ffc577ff4410cbf190817ddc35137c2"
 }

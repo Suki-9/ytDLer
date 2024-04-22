@@ -19,12 +19,15 @@ const windowWidth = inject<Ref<number>>('windowWidth') ?? window.innerWidth;
       :class="$style.menuButton">
       <p><span class="icon-github-circled"></span></p>
     </Button>
+
     <p v-if="windowWidth < 700">YouTube Downloader!</p>
 
     <SideSheet v-model="showMenu" :class="$style.sideSheet">
-      <RouterLink to=""><span class="icon-info-circled-alt"></span>Info</RouterLink>
+      <RouterLink @click="showMenu = false" to="/"><span class="icon-home"></span>Home</RouterLink>
+      <RouterLink @click="showMenu = false" to=""><span class="icon-info-circled-alt"></span>Info</RouterLink>
       <a href="https://github.com/Suki-9/ytDLer"><span class="icon-github-circled"></span>GitHub</a>
     </SideSheet>
+
   </div>
 </template>
 

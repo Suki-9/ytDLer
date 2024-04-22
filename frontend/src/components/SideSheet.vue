@@ -25,11 +25,13 @@ const props = defineProps<{
   z-index: 599;
 
   height: 100vh;
-  min-width: 50%;
-  max-width: 90%;
+  width: fit-content;
+  max-width: 80%;
+
+  padding-right: 3em;
 
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
 
   background-color: var(--color-bg-secondary);
 

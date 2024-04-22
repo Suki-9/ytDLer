@@ -35,6 +35,12 @@
       "css": "info-circled-alt",
       "code": 61574,
       "src": "mfglabs"
+    },
+    {
+      "uid": "w3nzesrlbezu6f30q7ytyq919p6gdlb6",
+      "css": "home",
+      "code": 59394,
+      "src": "typicons"
     }
   ]
 }

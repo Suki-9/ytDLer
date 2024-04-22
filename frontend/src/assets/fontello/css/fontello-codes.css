@@ -1,6 +1,7 @@
 
 .icon-cancel:before { content: '\e800'; } /* '' */
 .icon-download:before { content: '\e801'; } /* '' */
+.icon-home:before { content: '\e802'; } /* '' */
 .icon-info-circled-alt:before { content: '\f086'; } /* '' */
 .icon-github-circled:before { content: '\f09b'; } /* '' */
 .icon-youtube-play:before { content: '\f16a'; } /* '' */

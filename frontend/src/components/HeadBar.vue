@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { inject, ref, Ref } from 'vue';
+import { transition } from '../scripts/actions.ts';
 import Button from './Button.vue';
 import SideSheet from './SideSheet.vue'
 const showMenu = ref<boolean>(false);
 const windowWidth = inject<Ref<number>>('windowWidth') ?? window.innerWidth;
-
-const transition = (path: string) => window.location.href = path;
 </script>
 
 <template>

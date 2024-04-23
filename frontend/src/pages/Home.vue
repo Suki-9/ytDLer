@@ -65,7 +65,7 @@ const submit = async () => {
 
 <template>
   <div class="container">
-    <TextInput placeholder="please url" v-model:text="DLURL">
+    <TextInput placeholder="Enter url" v-model:text="DLURL">
       <p class="flex-center">Download YouTube URL<span class="material-symbols-outlined">download</span></p>
     </TextInput>
     <fieldset :class="$style.options">

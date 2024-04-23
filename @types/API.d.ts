@@ -14,7 +14,10 @@ type Endpoints = {
       };
     };
     res: {
-      url: string;
+      url: {
+        filePath: string;
+        streamPath?: string;
+      };
       title: string;
       uploadDate: string;
       videoId: string;

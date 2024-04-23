@@ -4,6 +4,7 @@ import Button from '../components/Button.vue';
 import Checkbox from '../components/Checkbox.vue';
 import Select from '../components/Select.vue';
 import LoadingDots from '../components/LoadingDots.vue';
+import VideoStream from '../components/VideoStream.vue';
 
 import { ref } from 'vue';
 import { genUuid } from '../scripts/UUID';
@@ -85,18 +86,16 @@ const submit = async () => {
       </Button>
     </div>
     <div v-if="fetchStatus" :class="['container', $style.result]">
-      <video v-if="thumbnail || fetchResult" controls>
-        <source v-if="fetchResult" :src="`${$API_URL}/files/${fetchResult.url}`" />
-      </video>
+      <VideoStream v-if="fetchResult" :src="`${$API_URL}/files/${fetchResult.url.streamPath}`" controls />
       <div :class="$style.datalist">
         <table v-if="fetchResult">
-          <tr v-for="data in Object.entries(fetchResult)">
+          <tr v-for="data in Object.entries(fetchResult).filter((kv) => kv[0] != 'url')">
             <td>{{ data[0] }}</td>
             <td>{{ data[1] }}</td>
           </tr>
         </table>
         <Button type="outlined" :isDisabled="!Boolean(fetchResult)" :class="$style.button"
-          :action="() => fetchResult && transition(`${$API_URL}/files/${fetchResult.url}`)">
+          :action="() => fetchResult && transition(`${$API_URL}/files/${fetchResult.url.filePath}`)">
           <p v-if="fetchResult">Download</p>
           <p v-else>
             <span>

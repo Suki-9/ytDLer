@@ -88,7 +88,10 @@ class Task {
 
   public getInfo = async () => ytdl.getInfo(this.url);
 
-  public async download(): Promise<string> {
+  public async download(): Promise<{
+    filePath: string,
+    streamPath?: string,
+  }> {
     let filePath: string;
 
     if (!this.options.silent) {
@@ -100,7 +103,10 @@ class Task {
     if (isVideType(this.options.mimeType)) {
       try {
         await this.downloadVideo();
+        let streamPath: Promise<string>;
+
         if (this.options.silent) {
+          streamPath = this.createVideoStream(`./Public/DL/${this.fileName}.mp4`);
           if (this.options.mimeType != 'video/mp4') {
             filePath = await this.fileConvert(`${this.fileName}.mp4`);
           } else {
@@ -110,9 +116,14 @@ class Task {
           this.state = 'completed';
         } else {
           filePath = await this.videoEncode(`${this.fileName}.mp4`, `${this.fileName}.wav`);
+          streamPath = this.createVideoStream(`./Public/files/${filePath}`);
           this.state = 'completed';
         }
-        return filePath;
+
+        return {
+          filePath: filePath,
+          streamPath: await streamPath,
+        };
       } catch (e) { throw e; }
 
     } else if (isAudioType(this.options.mimeType)) {
@@ -125,7 +136,10 @@ class Task {
         await moveFile(`./Public/DL/${this.fileName}.wav`, `./Public/files/${filePath}.wav`);
         this.state = 'completed';
       } catch (e) { throw e; }
-      return filePath;
+
+      return {
+        filePath: filePath,
+      };
 
     } else { throw new Error() }
   }
@@ -163,6 +177,21 @@ class Task {
     return new Promise<void>((resolve, reject) => {
       this.stream.audio?.on('end', () => resolve());
       this.stream.audio?.on('error', () => reject())
+    });
+  }
+
+  private async createVideoStream(
+    fileName: string,
+  ) {
+    this.state = 'Media Converting';
+    const resultFileName = createId();
+
+    return new Promise<string>((resolve, reject) => {
+      exec(`ffmpeg -i ${fileName} -c:v copy -c:a copy -f hls -hls_time 9 -hls_playlist_type vod -hls_segment_filename "./Public/files/${resultFileName}%3d.ts" ./Public/files/${resultFileName}.m3u8`,
+        (err) => err
+          ? reject(new Error('convert failed!!'))
+          : resolve(`${resultFileName}.m3u8`)
+      );
     });
   }
 

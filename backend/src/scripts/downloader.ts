@@ -40,6 +40,7 @@ export const downloader = async (
       uploadDate: info.videoDetails.uploadDate,
       videoId: info.videoDetails.videoId,
       viewCount: Number(info.videoDetails.viewCount),
+      mimeType: options.mimeType,
     };
   });
 };

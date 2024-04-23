@@ -22,6 +22,7 @@ type Endpoints = {
       uploadDate: string;
       videoId: string;
       viewCount: number;
+      mimeType: MimeTypes['audio'] | MimeTypes['video'];
     };
   };
   'progress': {

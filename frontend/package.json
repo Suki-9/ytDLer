@@ -1,7 +1,6 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,6 +9,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "hls.js": "^1.5.8",
     "prettier": "^3.2.5",
     "sass": "^1.75.0",
     "vue": "^3.4.23",

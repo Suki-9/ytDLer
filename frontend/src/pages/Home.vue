@@ -4,6 +4,7 @@ import Button from '../components/Button.vue';
 import Checkbox from '../components/Checkbox.vue';
 import Select from '../components/Select.vue';
 import LoadingDots from '../components/LoadingDots.vue';
+import VideoStream from '../components/VideoStream.vue';
 
 import { ref } from 'vue';
 import { genUuid } from '../scripts/UUID';
@@ -20,7 +21,6 @@ type MimeType = typeof mimeTypes[keyof typeof mimeTypes][number]
 
 const fetchStatus = ref<'loading' | 'failed' | Endpoints['progress']['res']['status']>();
 const progress = ref<number>(0);
-const thumbnail = ref<string>();
 
 const DLURL = ref<string>();
 const fetchResult = ref<Endpoints['youtube-dl']['res']>();
@@ -33,7 +33,11 @@ const options = ref<{
   mimeType: mimeTypes.video[0],
 });
 
+const isAudioType = (type: string): type is MimeTypes['audio'] => type.includes('audio/');
+const isVideType = (type: string): type is MimeTypes['video'] => type.includes('video/');
+
 const submit = async () => {
+  fetchResult.value = undefined;
   fetchStatus.value = 'loading';
 
   const id = genUuid();
@@ -65,7 +69,7 @@ const submit = async () => {
 
 <template>
   <div class="container">
-    <TextInput placeholder="please url" v-model:text="DLURL">
+    <TextInput placeholder="Enter url" v-model:text="DLURL">
       <p class="flex-center">Download YouTube URL<span class="material-symbols-outlined">download</span></p>
     </TextInput>
     <fieldset :class="$style.options">
@@ -85,25 +89,27 @@ const submit = async () => {
       </Button>
     </div>
     <div v-if="fetchStatus" :class="['container', $style.result]">
-      <video v-if="thumbnail || fetchResult" controls>
-        <source v-if="fetchResult" :src="`${$API_URL}/files/${fetchResult.url}`" />
-      </video>
+      <VideoStream v-if="fetchResult && isVideType(fetchResult.mimeType)" :src="`${$API_URL}/files/${fetchResult.url.streamPath}`" controls />
+      <audio v-if="fetchResult && isAudioType(fetchResult.mimeType)" :src="`${$API_URL}/files/${fetchResult.url.filePath}`" controls></audio>
       <div :class="$style.datalist">
         <table v-if="fetchResult">
-          <tr v-for="data in Object.entries(fetchResult)">
+          <tr v-for="data in Object.entries(fetchResult).filter((kv) => kv[0] != 'url')">
             <td>{{ data[0] }}</td>
             <td>{{ data[1] }}</td>
           </tr>
         </table>
         <Button type="outlined" :isDisabled="!Boolean(fetchResult)" :class="$style.button"
-          :action="() => fetchResult && transition(`${$API_URL}/files/${fetchResult.url}`)">
+          :action="() => fetchResult && transition(`${$API_URL}/files/${fetchResult.url.filePath}`)">
           <p v-if="fetchResult">Download</p>
           <p v-else>
             <span>
               {{ fetchStatus }}
-              <LoadingDots v-if="fetchStatus === 'loading'" />
+              <LoadingDots v-show="fetchStatus == 'Media Converting' || fetchStatus == 'Video encoding'" />
             </span>
-            <span>{{ progress }}%</span>
+            <span
+              v-show="fetchStatus != 'completed' && fetchStatus != 'Media Converting' && fetchStatus != 'Video encoding'">
+              {{progress }}%
+            </span>
             <span :style="`clip-path: inset(0 ${100 - progress}% 0 0);`" :class="$style.progressBar"></span>
           </p>
         </Button>
@@ -132,12 +138,16 @@ const submit = async () => {
   width: 100%;
 
   video {
-    max-width: 100%;
+    width: 100%;
     height: 15em;
     margin-top: 1em;
 
     aspect-ratio: 16 / 9;
     object-fit: contain;
+  }
+
+  audio {
+    width: 100%;
   }
 
   table {
@@ -159,7 +169,7 @@ const submit = async () => {
     justify-content: space-between;
 
     padding: .2em .4em;
-    margin-top: 1em;
+    margin: 1em 0;
 
     width: 100%;
 

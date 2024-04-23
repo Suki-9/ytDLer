@@ -14,11 +14,15 @@ type Endpoints = {
       };
     };
     res: {
-      url: string;
+      url: {
+        filePath: string;
+        streamPath?: string;
+      };
       title: string;
       uploadDate: string;
       videoId: string;
       viewCount: number;
+      mimeType: MimeTypes['audio'] | MimeTypes['video'];
     };
   };
   'progress': {
@@ -30,6 +34,7 @@ type Endpoints = {
       | 'init'
       | 'Audio downloading'
       | 'Video downloading'
+      | 'Media Converting'
       | 'Video encoding'
       | 'completed';
       progress: number,

@@ -30,6 +30,7 @@ type Endpoints = {
       | 'init'
       | 'Audio downloading'
       | 'Video downloading'
+      | 'Media Converting'
       | 'Video encoding'
       | 'completed';
       progress: number,

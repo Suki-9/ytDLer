@@ -29,7 +29,7 @@ api.post('youtube-dl',
     } = c.req.valid('json');
     try {
       return c.json({
-        ...(await downloader(id, url, id, options.mimeType))
+        ...(await downloader(id, url, id, options))
       }, 200);
     } catch (e) {
       console.log(e);

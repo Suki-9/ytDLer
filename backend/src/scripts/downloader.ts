@@ -107,10 +107,12 @@ class Task {
 
         if (this.options.silent) {
           streamPath = this.createVideoStream(`./Public/DL/${this.fileName}.mp4`);
+
           if (this.options.mimeType != 'video/mp4') {
             filePath = await this.fileConvert(`${this.fileName}.mp4`);
           } else {
             filePath = `${createId()}.${this.options.mimeType.split('/')[1]}`;
+            await streamPath;
             await moveFile(`./Public/DL/${this.fileName}.mp4`, `./Public/files/${this.fileName}.mp4`);
           }
           this.state = 'completed';
@@ -150,6 +152,7 @@ class Task {
     this.state = 'Video downloading';
     this.stream.video = ytdl(this.url, {
       filter: (format) => format.container === 'mp4',
+      quality: 'highestvideo',
     });
     this.stream.video.pipe(createWriteStream(filePath));
 

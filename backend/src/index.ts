@@ -12,7 +12,7 @@ app.use('/*', serveStatic({ root: './Public' }))
 app.use('/api/*', cors());
 app.route('/api', api);
 
-const port = 7750;
+const port = 7700;
 console.log(`Server is running on port ${port}`)
 
 clearCache();
